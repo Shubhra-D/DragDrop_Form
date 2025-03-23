@@ -9,8 +9,18 @@ const DragCanvas = ({ elements = [], onselect, setElements }) => {
   
   // Load saved elements on mount
   useEffect(() => {
-    const savedElements = JSON.parse(localStorage.getItem("elements")) || [];
-    setElements(savedElements);
+    try {
+      const savedElements = JSON.parse(localStorage.getItem("elements")) || [];
+      const validElements = savedElements.map((el) => ({
+        ...el,
+        width: el.width || 100,
+        height: el.height || 50,
+      }));
+      setElements(validElements);
+    } catch (error) {
+      console.error("Error parsing elements from localStorage", error);
+      setElements([]);
+    }
   }, [setElements]);
 
   // Update localStorage when elements change
@@ -18,7 +28,6 @@ const DragCanvas = ({ elements = [], onselect, setElements }) => {
     localStorage.setItem("elements", JSON.stringify(elements));
   }, [elements]);
 
-  
   return (
     <Box
       ref={setNodeRef}
@@ -35,11 +44,11 @@ const DragCanvas = ({ elements = [], onselect, setElements }) => {
         elements.map((el) => (
           <ResizableBox
             key={el.id}
-            width={el.width }
-            height={el.height}
+            width={el.width || 100}
+            height={el.height || 50}
             axis="both"
             resizeHandles={["se"]}
-            onResizeStop={( data) => {
+            onResizeStop={(event, data) => {
               setElements((prev) =>
                 prev.map((item) =>
                   item.id === el.id
