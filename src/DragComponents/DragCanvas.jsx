@@ -1,9 +1,24 @@
 import { Box, Text } from "@chakra-ui/react";
 import { useDroppable } from "@dnd-kit/core";
-import React from "react";
+import React, { useEffect } from "react";
+import { ResizableBox } from "react-resizable";
+import 'react-resizable/css/styles.css'
 
-const DragCanvas = ({ elements = [], onselect }) => {
+const DragCanvas = ({ elements = [], onselect, setElements }) => {
   const { setNodeRef } = useDroppable({ id: "canvas" });
+  
+  // Load saved elements on mount
+  useEffect(() => {
+    const savedElements = JSON.parse(localStorage.getItem("elements")) || [];
+    setElements(savedElements);
+  }, [setElements]);
+
+  // Update localStorage when elements change
+  useEffect(() => {
+    localStorage.setItem("elements", JSON.stringify(elements));
+  }, [elements]);
+
+  
   return (
     <Box
       ref={setNodeRef}
@@ -18,20 +33,47 @@ const DragCanvas = ({ elements = [], onselect }) => {
     >
       {elements?.length > 0 ? (
         elements.map((el) => (
-          <Box
+          <ResizableBox
             key={el.id}
-            onClick={() => onselect(el.id)}
-            p={2}
-            m={3}
-            height={'2xs'}
-            border="1px solid black"
-            cursor="pointer"
-            bg="gray.200"
-            borderRadius="md"
-            mb={2}
+            width={el.width }
+            height={el.height}
+            axis="both"
+            resizeHandles={["se"]}
+            onResizeStop={( data) => {
+              setElements((prev) =>
+                prev.map((item) =>
+                  item.id === el.id
+                    ? {
+                        ...item,
+                        width: data.size.width,
+                        height: data.size.height,
+                      }
+                    : item
+                )
+              );
+            }}
           >
-            {el.content}
-          </Box>
+            <Box
+              onClick={() => onselect(el.id)}
+              p={2}
+              m={3}
+              style={{
+                backgroundColor: el.bgColor || "gray",
+                color: el.color || "black",
+                fontSize: el.fontSize || "16px",
+                width: "100%",
+                height: "100%",
+              }}
+              cursor="pointer"
+              borderRadius="md"
+            >
+              {el.type === "Image" ? (
+                <img src={el.content} alt="Image" width="100%" height="100%" />
+              ) : (
+                el.content
+              )}
+            </Box>
+          </ResizableBox>
         ))
       ) : (
         <Text color="gray.500" textAlign="center">
