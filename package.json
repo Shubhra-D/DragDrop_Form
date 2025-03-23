@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predeploy":"npm run deploy",
-    "deploy":"gh-pages -d dist",
+    "predeploy": "npm run deploy",
+    "deploy": "gh-pages -d dist",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -35,5 +35,18 @@
     "globals": "^15.15.0",
     "vite": "^6.2.0",
     "vite-tsconfig-paths": "^5.1.4"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shubhra-D/DragDrop_Form.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shubhra-D/DragDrop_Form/issues"
+  },
+  "homepage": "https://github.com/Shubhra-D/DragDrop_Form#readme"
 }
